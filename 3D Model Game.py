@@ -21,6 +21,17 @@ RECTANGLE = pygame.image.load(os.path.join("Assets/shapes", "rectangle.png"))
 CIRCLE = pygame.image.load(os.path.join("Assets/shapes", "circle.png"))
 TRIANGLE = pygame.image.load(os.path.join("Assets/shapes", "triangle.png"))
 
+#Load Models
+CUBE = pygame.transform.scale(pygame.image.load(os.path.join("Assets/models", "cube.png")), (50, 50))
+CUBOID = pygame.transform.scale(pygame.image.load(os.path.join("Assets/models", "cuboid.png")), (50, 50))
+TRI_PRISM = pygame.transform.scale(pygame.image.load(os.path.join("Assets/models", "triangular_prism.png")), (50, 50))
+
+MODEL_MAP = {
+        "cube": (CUBE, {SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE}),
+        "cuboid": (CUBOID, {RECTANGLE, RECTANGLE, RECTANGLE, RECTANGLE, RECTANGLE, RECTANGLE}),
+        "triangular_prism": (TRI_PRISM, {TRIANGLE, TRIANGLE, RECTANGLE, RECTANGLE, RECTANGLE})
+    }
+
 #player ship
 PLAYER_SHIP = pygame.image.load(os.path.join("Assets/ships", "pixel_ship_yellow.png"))
 
@@ -77,18 +88,36 @@ class Enemy(Character):
         self.y += vel
 
 
+class Laser:
+    def __init__(self, x, y, laser):
+        self.x = x
+        self.y = y
+        self.laser_img = laser
+
+    def draw(self, window):
+        window.blit(self.laser_img, (self.x, self.y))
+
+def collide(obj1, obj2):
+    offset_x = obj2.x - obj1.x
+    offset_y = obj2.y - obj1.y
+    return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
+
 def main():
     running = True
     fps = 60
-    lost = False
+    main_font = pygame.font.SysFont("arial", 50)
+    lost_font = pygame.font.SysFont("arial", 60)
+    round = 1
     level = 0
     lives = 3
-    main_font = pygame.font.SysFont("arial", 50)
+    lost = False
+    win = True
+    won_round = False
+    model, model_shapes = MODEL_MAP[random.choice(["cube", "cuboid", "triangular_prism"])]
     enemies = []
     wave_length = 5
     enemy_vel = 1
     player_vel = 5
-    boundaries = [0, WIDTH, 0, HEIGHT * 0.25]
     player = Player(300, 650)
 
     clock = pygame.time.Clock()
@@ -101,9 +130,11 @@ def main():
         levels_label = main_font.render(f"Level: {level}", 1, (255, 0, 0))
 
         WIN.blit(lives_label, (10, 10))
+        WIN.blit(model, (WIDTH/2, 10))
         WIN.blit(levels_label, (WIDTH - levels_label.get_width() - 10, 10))
-        for enemy in enemies:
-            enemy.draw(WIN)
+
+        for e in enemies:
+            e.draw(WIN)
         player.draw(WIN)
         pygame.display.update()
 
@@ -113,18 +144,46 @@ def main():
         if lives <= 0 or player.health <= 0:
             lost = True
 
+        if won_round:
+            if round > 3:
+                win = True
+            else:
+                model, model_shapes = MODEL_MAP[random.choice(["cube", "cuboid", "triangular_prism"])]
+                round += 1
+
+            won_round = False
 
         # TODO: Need to add in functionality when user reaches no lost state
         if lost:
-            pass
+            lost_label = lost_font.render("Game Over", 1, (255, 255, 255))
+            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
 
         # TODO: Need to make sure that if the user selects the wrong shape then they lose life
         if len(enemies) == 0:
-            level += 1
-            wave_length +=5
-            for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, - 100), random.choice(["square", "rectangle", "circle", "triangle"]))
-                enemies.append(enemy)
+            if level <= 2:
+                level += 1
+                wave_length += 5
+                height = 0
+                width = 0
+                for i in range(wave_length):
+                    for e in enemies:
+                        while True:
+                            height = random.randrange(-1500, - 100)
+                            width = random.randrange(50, WIDTH - 100)
+                            new_rect = pygame.Rect(width, height, e.get_width(), e.get_height())
+
+                            if not any(enmey for enmey in enemies if
+                                       new_rect.colliderect(enmey.x, enmey.y, enmey.get_width(),enmey.get_height())):
+                                break
+
+                    enemy = Enemy(width, height, random.choice(["square", "rectangle", "circle", "triangle"]))
+                    enemies.append(enemy)
+            else:
+                won_round = True
+                level = 0
+                wave_length = 5
+
+
 
         # Event Checker
         for event in pygame.event.get():
@@ -145,10 +204,14 @@ def main():
         if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() < HEIGHT:
             player.y += player_vel
 
+
+
         for enemy in list(enemies):
             enemy.move(enemy_vel)
-            if enemy.y + enemy.get_height() > HEIGHT:
+            if enemy.y + enemy.get_height() > HEIGHT and enemy.character_img in model_shapes:
                 lives -= 1
+
+            if enemy.y + enemy.get_height() > HEIGHT:
                 enemies.remove(enemy)
 
         redraw_window()
