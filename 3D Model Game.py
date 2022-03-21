@@ -95,8 +95,9 @@ class Player(Character):
         self.laser_img = YELLOW_LASER
         self.mask = pygame.mask.from_surface(self.character_img)
         self.max_health = health
+        self.lives = 3
 
-    def move_lasers(self, vel, objs):
+    def move_lasers(self, vel, objs, shapes_score, model_shapes):
         self.cooldown()
         for laser in self.lasers:
             laser.move(vel)
@@ -105,9 +106,15 @@ class Player(Character):
             else:
                 for obj in objs:
                     if laser.collision(obj):
+                        if obj.character_img in model_shapes:
+                            shapes_score += 1
+                            model_shapes.remove(obj.character_img)
+                        else:
+                            self.lives -= 1
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
+        return (shapes_score, model_shapes, )
 
     def draw(self, window):
         super().draw(window)
@@ -171,16 +178,16 @@ def main():
     shape_font = pygame.font.SysFont("arial", 20)
     lost_font = pygame.font.SysFont("arial", 60)
     round = 1
-    level = 0
-    lives = 3
+    level = 1
+    start = True
     lost = False
-    win = True
+    win = False
     won_round = False
     model, model_shapes = MODEL_MAP[random.choice(["cube", "cuboid", "triangular_prism"])]
-    print(model_shapes)
     num_of_shapes = len(model_shapes)
     shapes_score = 0
     enemies = []
+    prev_enemy_type = ""
     wave_length = 5
     enemy_vel = 1
     player_vel = 5
@@ -193,17 +200,29 @@ def main():
     def redraw_window():
         WIN.blit(BG, (0, 0))
         # draw text
-        lives_label = main_font.render(f"Lives: {lives}", 1, (255, 0, 0))
+        start_label = lost_font.render("Press Any Key To Start", 1, (255,255,255))
+        lives_label = main_font.render(f"Lives: {player.lives}", 1, (255, 0, 0))
         shapes_score_label = shape_font.render(f"Faces: {shapes_score} / {num_of_shapes}", 1, (255, 0, 0))
         levels_label = main_font.render(f"Level: {level}", 1, (255, 0, 0))
+        lost_label = lost_font.render("Game Over", 1, (255, 255, 255))
+        win_label = lost_font.render("You Win!", 1, (255, 255, 255))
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(model, ((WIDTH - model.get_width())/2, 10))
         WIN.blit(shapes_score_label, ((WIDTH-shapes_score_label.get_width())/2, model.get_height()+5))
         WIN.blit(levels_label, (WIDTH - levels_label.get_width() - 10, 10))
 
+        if start:
+            WIN.blit(start_label, (WIDTH/2 - start_label.get_width()/2, 350))
+
         for e in enemies:
             e.draw(WIN)
+
+        if win:
+            WIN.blit(win_label,  (WIDTH/2 - win_label.get_width()/2, 350))
+
+        if lost:
+            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
 
 
         player.draw(WIN)
@@ -212,93 +231,108 @@ def main():
     while running:
         clock.tick(fps)
         redraw_window()
-
-        if lives <= 0 or player.health <= 0:
-            lost = True
-
-        if won_round:
-            if round > 3:
-                win = True
-            else:
-                model, model_shapes = MODEL_MAP[random.choice(["cube", "cuboid", "triangular_prism"])]
-                round += 1
-
-            won_round = False
-
-        # TODO: Need to add in functionality when user reaches no lost state
-        if lost:
-            lost_label = lost_font.render("Game Over", 1, (255, 255, 255))
-            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
-
-        # TODO: Need to make sure that if the user selects the wrong shape then they lose life
-        if len(enemies) == 0:
-            if level <= 2:
-                level += 1
-                wave_length += 5
-                height = 0
-                width = 0
-                for i in range(wave_length):
-                    for e in enemies:
-                        while True:
-                            height = random.randrange(-1500, - 100)
-                            width = random.randrange(50, WIDTH - 100)
-                            new_rect = pygame.Rect(width, height, e.get_width(), e.get_height())
-
-                            if not any(enmey for enmey in enemies if
-                                       new_rect.colliderect(enmey.x, enmey.y, enmey.get_width(),enmey.get_height())):
-                                break
-
-                    enemy = Enemy(width, height, random.choice(["square", "rectangle", "circle", "triangle"]))
-                    enemies.append(enemy)
-            else:
-                won_round = True
-                level = 0
-                wave_length = 5
-
-
-
         # Event Checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        keys = pygame.key.get_pressed()
+        if start:
+            if any(pygame.key.get_pressed()):
+                start = False
+        else:
+            if player.lives <= 0:
+                lost = True
 
-        if keys[pygame.K_LEFT] and player.x - player_vel > 0:
-            player.x -= player_vel
+            if player.health <= 0:
+                player.lives -= 1
+                player.health = player.max_health
 
-        if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:
-            player.x += player_vel
+            if shapes_score >= 6:
+                won_round = True
+                shapes_score = 0
 
-        if keys[pygame.K_UP] and HEIGHT * 0.65 < player.y - player_vel > 0:
-            player.y -= player_vel
+            if won_round:
+                if round > 3:
+                    win = True
+                else:
+                    enemies.clear()
+                    level = 1
+                    model, model_shapes = MODEL_MAP[random.choice(["cube", "cuboid", "triangular_prism"])]
+                    num_of_shapes = len(model_shapes)
+                    round += 1
 
-        if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() < HEIGHT:
-            player.y += player_vel
+                won_round = False
 
-        if keys[pygame.K_SPACE]:
-            player.shoot()
+            # TODO: Need to add in functionality when user reaches no lost state
+            if lost or win:
+                enemies.clear()
+            else:
+                # TODO: Need to make sure that if the user selects the wrong shape then they lose life
+
+                if len(enemies) == 0:
+                    level += 1
+                    wave_length += 5
+                    height = 0
+                    width = 0
+                    for i in range(wave_length):
+                        for e in enemies:
+                            while True:
+                                height = random.randrange(-1500, - 100)
+                                width = random.randrange(50, WIDTH - 100)
+                                new_rect = pygame.Rect(width, height, e.get_width(), e.get_height())
+
+                                if not any(enmey for enmey in enemies if
+                                           new_rect.colliderect(enmey.x, enmey.y, enmey.get_width(),enmey.get_height())):
+                                    break
+                        while True:
+                            enemy_type = random.choice(["square", "rectangle", "circle", "triangle"])
+                            if enemy_type is not prev_enemy_type:
+                                break;
+
+                        enemy = Enemy(width, height, enemy_type)
+                        enemies.append(enemy)
+                        prev_enemy_type = enemy_type
+
+                keys = pygame.key.get_pressed()
+
+                if keys[pygame.K_LEFT] and player.x - player_vel > 0:
+                    player.x -= player_vel
+
+                if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:
+                    player.x += player_vel
+
+                if keys[pygame.K_UP] and HEIGHT * 0.65 < player.y - player_vel > 0:
+                    player.y -= player_vel
+
+                if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() < HEIGHT:
+                    player.y += player_vel
+
+                if keys[pygame.K_SPACE]:
+                    player.shoot()
 
 
-        for enemy in list(enemies):
-            enemy.move(enemy_vel)
-            enemy.move_lasers(laser_vel, player)
+                for enemy in list(enemies):
+                    enemy.move(enemy_vel)
+                    enemy.move_lasers(laser_vel, player)
 
-            if random.randrange(0, 2 * 60) == 1:
-                enemy.shoot()
+                    if random.randrange(0, 2 * 60) == 1:
+                        enemy.shoot()
 
-            if collide(enemy, player):
-                player.health -= 10
-                enemies.remove(enemy)
+                    if collide(enemy, player):
+                        if enemy.character_img in model_shapes:
+                            player.health -= 50
+                        else:
+                            player.health -= 10
+                        enemies.remove(enemy)
 
-            if enemy.y + enemy.get_height() > HEIGHT and enemy.character_img in model_shapes:
-                lives -= 1
-                model_shapes.remove(enemy.character_img)
+                    if enemy.y + enemy.get_height() > HEIGHT and enemy.character_img in model_shapes:
+                        player.lives -= 1
 
-            if enemy.y + enemy.get_height() > HEIGHT:
-                enemies.remove(enemy)
+                    if enemy.y + enemy.get_height() > HEIGHT:
+                        enemies.remove(enemy)
 
-        player.move_lasers(-laser_vel, enemies)
+                shapes_score, model_shapes = player.move_lasers(-laser_vel, enemies, shapes_score, model_shapes)
+
 
 if __name__ == "__main__":
     main()
