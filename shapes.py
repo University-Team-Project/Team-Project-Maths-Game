@@ -9,6 +9,7 @@ class Rectangle:
         self.length = length
         self.width = width
         self.colour = colour
+        self.category = colour  # CHANGE THIS IF YOU WANT TO CATEGORIZE BY SOMETHING ELSE.
         self.dragging = False
         self.pygameRectangle = pygame.rect.Rect(self.xPos, self.yPos, self.length, self.width)
 

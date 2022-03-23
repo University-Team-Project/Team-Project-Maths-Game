@@ -1,16 +1,33 @@
 import pygame
+from shapes import Rectangle
 
 
 class Settings:
-    def __init__(self):
+    def __init__(self, colours):
         pygame.init()
-        self.fps = 60
+        self.fps = 240
         self.caption = 'Drag & Drop'
         self.width, self.height = 1280, 720
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.fpsClock = pygame.time.Clock()
+        self.colour = (0, 0, 0)
+        self.category1 = Category(self.screen, 0, 0, self.width / 2, self.height / 2, colours.RED,
+                                  colours.RED)
+        self.category2 = Category(self.screen, self.width / 2, 0, self.width, self.height / 2, colours.GREEN,
+                                  colours.GREEN)
+        self.category3 = Category(self.screen, 0, self.height / 2, self.width / 2, self.height, colours.BLUE,
+                                  colours.BLUE)
+        self.category4 = Category(self.screen, self.width / 2, self.height / 2, self.width, self.height, colours.PURPLE,
+                                  colours.PURPLE)
         pygame.display.set_caption(self.caption)
         pygame.mouse.set_visible(False)
+
+    def screen_tick(self, colours):
+        self.screen.fill(self.colour)
+        self.category1.draw_rectangle()
+        self.category2.draw_rectangle()
+        self.category3.draw_rectangle()
+        self.category4.draw_rectangle()
 
 
 class Cursor:
@@ -41,3 +58,10 @@ class Colours:
         self.RED = (255, 0, 0)
         self.GREEN = (0, 255, 0)
         self.BLUE = (0, 0, 255)
+
+
+class Category(Rectangle):
+    def __init__(self, surface, xPos, yPos, length, width, colour, category):
+        super().__init__(surface, xPos, yPos, length, width, colour)
+        self.category = category
+        self.categoryRectangle = pygame.rect.Rect(self.xPos, self.yPos, self.length, self.width)
