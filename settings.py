@@ -30,6 +30,7 @@ class Cursor:
 
         rectangle.surface.blit(self.loadedCursor, (x, y))
 
+
 class Colours:
     def __init__(self):
         self.WHITE = (255, 255, 255)
