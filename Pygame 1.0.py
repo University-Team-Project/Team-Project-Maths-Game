@@ -4,22 +4,21 @@ from pygame.locals import *
 from shapes import *
 from settings import *
 
+# gets the game settings and data from the classes in the setting and shapes py file
 settings = Settings()
 cursor = Cursor()
 screen = settings.screen
 colour = Colours()
 
-
+# creates a new rectangle on the screen according to the variables given to the class
 rectangle = Rectangle(screen, 176, 134, 50, 50, colour.PURPLE)
 
-mouseFlag = False
-pygame.mouse.set_visible(False)
-
-
-# Game loop.
+# game loop.
 while True:
+
     screen.fill(colour.WHITE)
 
+    # event handler
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -29,27 +28,27 @@ while True:
             if event.button == 1:
                 if rectangle.pygameRectangle.collidepoint(event.pos):
                     rectangle.dragging = True
-                    cursor.setCursor(rectangle)
-                    mouse_x, mouse_y = event.pos
-                    offset_x = rectangle.xPos - mouse_x
-                    offset_y = rectangle.yPos - mouse_y
+                    cursor.set_cursor(rectangle)
+                    cursor.xPos, cursor.yPos = event.pos
+                    offset_x = rectangle.xPos - cursor.xPos
+                    offset_y = rectangle.yPos - cursor.yPos
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            cursor.setCursor(rectangle)
+            cursor.set_cursor(rectangle)
             if event.button == 1:
                 rectangle.dragging = False
 
         elif event.type == pygame.MOUSEMOTION:
             if rectangle.dragging:
-                mouse_x, mouse_y = event.pos
-                rectangle.xPos = mouse_x + offset_x
-                rectangle.yPos = mouse_y + offset_y
+                cursor.xPos, cursor.yPos = event.pos
+                rectangle.xPos = cursor.xPos + offset_x
+                rectangle.yPos = cursor.yPos + offset_y
 
     screen.fill(colour.WHITE)
 
-    rectangle.drawRectangle()
+    rectangle.draw_rectangle()
 
-    cursor.setCursor(rectangle)
+    cursor.set_cursor(rectangle)
 
     pygame.display.flip()
 
@@ -57,5 +56,4 @@ while True:
 
     # Draw.
 
-    pygame.display.flip()
     settings.fpsClock.tick(settings.fps)

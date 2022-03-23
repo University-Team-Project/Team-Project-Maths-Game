@@ -10,6 +10,7 @@ class Settings:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.fpsClock = pygame.time.Clock()
         pygame.display.set_caption(self.caption)
+        pygame.mouse.set_visible(False)
 
 
 class Cursor:
@@ -17,22 +18,26 @@ class Cursor:
         self.defaultCursor = "resources/wii-open.png"
         self.actionCursor = "resources/wii-grab.png"
         self.loadedCursor = pygame.image.load(self.defaultCursor).convert_alpha()
+        self.xPos = 0
+        self.yPos = 0
 
-    def setCursor(self, rectangle):
+    def set_cursor(self, rectangle):
         if rectangle.dragging:
             self.loadedCursor = pygame.image.load(self.actionCursor).convert_alpha()
         else:
             self.loadedCursor = pygame.image.load(self.defaultCursor).convert_alpha()
 
-        x, y = pygame.mouse.get_pos()
-        x -= self.loadedCursor.get_width() / 2
-        y -= self.loadedCursor.get_height() / 2
+        self.xPos, self.yPos = pygame.mouse.get_pos()
+        self.xPos -= self.loadedCursor.get_width() / 2
+        self.yPos -= self.loadedCursor.get_height() / 2
 
-        rectangle.surface.blit(self.loadedCursor, (x, y))
+        rectangle.surface.blit(self.loadedCursor, (self.xPos, self.yPos))
 
 
 class Colours:
     def __init__(self):
         self.WHITE = (255, 255, 255)
         self.PURPLE = (128, 0, 128)
-        self.BLACK = (0, 0, 0)
+        self.RED = (255, 0, 0)
+        self.GREEN = (0, 255, 0)
+        self.BLUE = (0, 0, 255)

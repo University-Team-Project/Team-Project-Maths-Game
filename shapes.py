@@ -12,7 +12,6 @@ class Rectangle:
         self.dragging = False
         self.pygameRectangle = pygame.rect.Rect(self.xPos, self.yPos, self.length, self.width)
 
-    def drawRectangle(self):
+    def draw_rectangle(self):
         self.pygameRectangle = pygame.rect.Rect(self.xPos, self.yPos, self.length, self.width)
         pygame.draw.rect(self.surface, self.colour, self.pygameRectangle)
-
