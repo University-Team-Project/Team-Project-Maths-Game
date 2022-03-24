@@ -103,7 +103,7 @@ class Category(Rectangle):
         :param surface:
         :param xPos:
         :param yPos:
-        :param length: 
+        :param length:
         :param width:
         :param colour:
         :param category:

@@ -44,9 +44,9 @@ def game_loop():
                     for row in category_rectangles:
                         for col in row:
                             if rectangle.category == col.category:
-                                if rectangle.pygameRectangle.colliderect(col.categoryRectangle):
+                                if col.categoryRectangle.collidepoint(event.pos):
                                     score += 1
-                                    print(score) # Currently works (NOT SURE HOW SCALABLE).
+                                    print(score)  # Currently works (NOT SURE HOW SCALABLE).
 
             elif event.type == pygame.MOUSEMOTION:
                 if rectangle.dragging:
