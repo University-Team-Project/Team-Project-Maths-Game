@@ -4,7 +4,7 @@ from shapes import *
 from settings import *
 
 '''
-Initalized settings
+Initialized settings
 '''
 colour = Colours()
 settings = Settings(colour)
@@ -17,10 +17,7 @@ def game_loop():
     rectangle = Rectangle(screen, 176, 134, 50, 50, colour.PURPLE)
     # game loop.
     score = 0
-    category_rectangles = [settings.category1,
-                           settings.category2,
-                           settings.category3,
-                           settings.category4]
+    category_rectangles = settings.categoryArray
     while True:
 
         settings.screen_tick(colour)
@@ -44,15 +41,12 @@ def game_loop():
                 cursor.set_cursor(rectangle)
                 if event.button == 1:
                     rectangle.dragging = False
-                    for i in category_rectangles:
-                        if rectangle.category == i.category:
-                            if rectangle.pygameRectangle.colliderect(i.categoryRectangle):
-                                score += 1
-                                print(score) # Currently works (NOT SURE HOW SCALABLE).
-
-
-
-
+                    for row in category_rectangles:
+                        for col in row:
+                            if rectangle.category == col.category:
+                                if rectangle.pygameRectangle.colliderect(col.categoryRectangle):
+                                    score += 1
+                                    print(score) # Currently works (NOT SURE HOW SCALABLE).
 
             elif event.type == pygame.MOUSEMOTION:
                 if rectangle.dragging:
