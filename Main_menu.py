@@ -10,7 +10,7 @@ title_surface = pygame.image.load("Assets/TITLESCREEN.png").convert()
 def game_choice(value, choice):
     # Do stuff
     pass
-
+#new test
 
 def start_the_game():
     # Do stuff
