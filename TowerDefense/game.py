@@ -20,13 +20,14 @@ class Game:
         self.win = pygame.display.set_mode((self.width, self.height))
         self.enemys = []
         self.attack_towers = [ArcherTower(300, 300), ArcherTower(800, 400), ArcherTowerShort(600, 200)]
-        self.support_towers = [RangeTower(100, 100)]
+        self.support_towers = [DamageTower(250, 370)]
         self.lives = 10
         self.money = 100
-        self.bg = pygame.image.load(os.path.join("game_assets", "game_background.png"))
+        self.bg = pygame.image.load(os.path.join("game_assets", "game_background_2.png"))
         self.bg = pygame.transform.scale(self.bg, (self.width, self.height))
         self.timer = time.time()
         self.life_font = pygame.font.SysFont("freesansbold.ttf", 60)
+        self.selected_tower = None
 
     def run(self):
         if time.time() - self.timer > 2:
@@ -39,7 +40,7 @@ class Game:
             if time.time() - self.timer >= random.randrange(1,5)/2:
                 self.timer = time.time()
                 self.enemys.append(random.choice([Knight(), OrcEnemy(), Skeleton()]))
-            clock.tick(30)
+            clock.tick(60)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -47,7 +48,27 @@ class Game:
                 pos = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pass
+
+                    btn_clicked = None
+                    if self.selected_tower:
+                        btn_clicked = self.selected_tower.menu.get_clicked(pos[0], pos[1])
+                        if btn_clicked:
+                            print(btn_clicked)
+
+                    if not btn_clicked:
+                        for tw in self.attack_towers:
+                            if tw.click(pos[0], pos[1]):
+                                tw.selected = True
+                                self.selected_tower = tw
+                            else:
+                                tw.selected = False
+
+                        for tw in self.support_towers:
+                            if tw.click(pos[0], pos[1]):
+                                tw.selected = True
+                                self.selected_tower = tw
+                            else:
+                                tw.selected = False
 
             to_del = []
             for en in self.enemys:
@@ -84,7 +105,7 @@ class Game:
         for en in self.enemys:
             en.draw(self.win)
 
-        text = self.life_font.render(str(self.lives), 1, (255,255,255))
+        text = self.life_font.render(str(self.lives), True, (255,255,255))
         life = pygame.transform.scale(lives_img,(50,50))
         start_x = self.width - life.get_width() - 10
         self.win.blit(text, (start_x - text.get_width() - 10, 15))

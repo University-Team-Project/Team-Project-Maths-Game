@@ -2,6 +2,7 @@ import os.path
 import math
 import pygame
 from .tower import Tower
+
 tower_imgs1 = []
 archer_imgs1 = []
 
@@ -15,6 +16,7 @@ for x in range(51, 56):
         pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower2/", str(x) + ".png")),
                                (40, 40)))
 
+
 class ArcherTower(Tower):
 
     def __init__(self, x, y):
@@ -23,9 +25,12 @@ class ArcherTower(Tower):
         self.archer_imgs = archer_imgs1
         self.archer_count = 0
         self.range = 200
+        self.original_range = self.range
         self.inRange = False
         self.left = True
         self.damage = 1
+        self.original_damage = self.damage
+        self.width = self.height = 90
 
     def draw(self, win):
         super(ArcherTower, self).draw_radius(win)
@@ -43,7 +48,7 @@ class ArcherTower(Tower):
             add = -25
         else:
             add = -archer.get_width() + 10
-        win.blit(archer, ((self.x + self.width / 2 + add), (self.y - archer.get_height() - 25)))
+        win.blit(archer, ((self.x + add), (self.y - archer.get_height() - 25)))
 
     def change_range(self, r):
 
@@ -83,21 +88,24 @@ archer_imgs = []
 
 for x in range(10, 12):
     tower_imgs.append(
-        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower1/", "12" + ".png")), (90, 90)))
+        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower1/", "12" + ".png")),
+                               (90, 90)))
 
 for x in range(51, 56):
     archer_imgs.append(
-        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower2/", str(x) + ".png")), (40, 40)))
+        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower2/", str(x) + ".png")),
+                               (40, 40)))
 
 
 class ArcherTowerShort(ArcherTower):
     def __init__(self, x, y):
-        super(ArcherTower, self).__init__(x, y)
+        super().__init__(x, y)
         self.tower_imgs = tower_imgs
         self.archer_imgs = archer_imgs
         self.archer_count = 0
         self.range = 100
+        self.original_range = self.range
         self.inRange = False
         self.left = True
         self.damage = 2
-
+        self.original_damage = self.damage

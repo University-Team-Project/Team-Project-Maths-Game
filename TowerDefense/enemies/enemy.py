@@ -8,15 +8,14 @@ class Enemy:
     def __init__(self):
         self.width = 64
         self.height = 64
-        self.animation_count = 0
+        self.animation_count = 3
         self.health = 1
-        self.path = []
         self.img = None
         self.dis = 0
-        self.velocity = 3
-        self.path = [(308, 685), (286, 613), (198, 587), (124, 522), (110, 445), (152, 374), (236, 346), (302, 271),
-                     (321, 182), (401, 138), (493, 131), (598, 132), (661, 181), (675, 260), (680, 447), (759, 508),
-                     (1012, 515), (1194, 515)]
+        self.velocity = 5
+        self.path = [(-10, 224),(19, 224), (177, 235), (282, 283), (526, 277), (607, 217), (641, 105), (717, 57),
+                     (796, 83), (855, 222), (973, 284), (1046, 366), (1022, 430), (894, 492), (740, 500), (580, 550),
+                     (148, 500), (12, 310), (-20, 335), (-75, 385), (-100, 375)]
         self.x = self.path[0][0]
         self.y = self.path[0][1]
 
@@ -47,7 +46,6 @@ class Enemy:
         pygame.draw.rect(win, (255,0,0), (self.x-35, self.y - 70, length, 10), 0)
         pygame.draw.rect(win, (0, 255, 0), (self.x-35, self.y - 70, health_bar, 10), 0)
 
-
     def collide(self, X, Y):
 
         if X <= self.x + self.width and X >= self.x:
@@ -59,7 +57,7 @@ class Enemy:
 
         x1, y1 = self.path[self.path_pos]
         if self.path_pos + 1 >= len(self.path):
-            x2, y2 = (-10, 515)
+            x2, y2 = (-10, 355)
         else:
             x2, y2 = self.path[self.path_pos + 1]
 
@@ -68,8 +66,6 @@ class Enemy:
         dirn = (dirn[0] / length, dirn[1] / length)
 
         move_x, move_y = ((self.x + dirn[0]), (self.y + dirn[1]))
-        self.dis += length
-        print(self.dis)
 
         self.x = move_x
         self.y = move_y
@@ -86,7 +82,7 @@ class Enemy:
                 if self.x <= x2 and self.y >= y2:
                     self.path_pos += 1
             else:
-                if self.x <= x2 and self.y <= y2:
+                if self.x <= x2 and self.y >= y2:
                     self.path_pos += 1
 
     def hit(self, damage):
