@@ -17,8 +17,8 @@ class RangeTower(Tower):
         self.width = self.height = 90
 
     def draw(self, win):
-        super(RangeTower, self).draw_radius(win)
-        super(RangeTower, self).draw(win)
+        super().draw_radius(win)
+        super().draw(win)
 
     def support(self, towers):
         effected = []

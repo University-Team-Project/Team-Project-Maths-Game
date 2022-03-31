@@ -2,16 +2,20 @@ import os.path
 import math
 import pygame
 from .tower import Tower
+from menu.menu import Menu
+
+menu_bg = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "table_2.png")), (123, 70))
+upgrade_btn = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "upgrade.png")), (50, 50))
 
 tower_imgs1 = []
 archer_imgs1 = []
 
-for x in range(10, 12):
+for x in range(10, 13):
     tower_imgs1.append(
         pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower1/", str(x) + ".png")),
                                (90, 90)))
 
-for x in range(51, 56):
+for x in range(51, 57):
     archer_imgs1.append(
         pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower2/", str(x) + ".png")),
                                (40, 40)))
@@ -31,6 +35,9 @@ class ArcherTower(Tower):
         self.damage = 1
         self.original_damage = self.damage
         self.width = self.height = 90
+
+        self.menu = Menu(self, self.x, self.y, menu_bg, [2000, 5000, "Max"])
+        self.menu.add_btn(upgrade_btn, "Upgrade")
 
     def draw(self, win):
         super(ArcherTower, self).draw_radius(win)
@@ -86,12 +93,12 @@ class ArcherTower(Tower):
 tower_imgs = []
 archer_imgs = []
 
-for x in range(10, 12):
+for x in range(7, 10):
     tower_imgs.append(
-        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower1/", "12" + ".png")),
+        pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower1/", str(x) + ".png")),
                                (90, 90)))
 
-for x in range(51, 56):
+for x in range(51, 57):
     archer_imgs.append(
         pygame.transform.scale(pygame.image.load(os.path.join("archeryTowerAssets/archerTower2/", str(x) + ".png")),
                                (40, 40)))
@@ -109,3 +116,6 @@ class ArcherTowerShort(ArcherTower):
         self.left = True
         self.damage = 2
         self.original_damage = self.damage
+
+        self.menu = Menu(self, self.x, self.y, menu_bg, [2500, 5500, "Max"])
+        self.menu.add_btn(upgrade_btn, "Upgrade")
