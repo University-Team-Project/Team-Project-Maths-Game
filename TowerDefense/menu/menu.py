@@ -8,11 +8,12 @@ star2 = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "st
 
 
 class Button:
-    def __init__(self, x, y, img, name):
+    def __init__(self, menu, img, name):
         self.name = name
         self.img = img
-        self.x = x
-        self.y = y
+        self.x = menu.x - 50 + 10
+        self.y = menu.y - 110
+        self.menu = menu
         self.width = self.img.get_width()
         self.height = self.img.get_height()
 
@@ -26,12 +27,21 @@ class Button:
     def draw(self, win):
         win.blit(self.img, (self.x, self.y))
 
+    def update(self):
+        self.x = self.menu.x - 50
+        self.y = self.menu.y - 110
+
+
 
 class VerticalButton(Button):
     def __init__(self, x, y, img, name, cost):
-        super(VerticalButton, self).__init__(x, y, img, name)  # super() is used to call the parent class constructor
+        self.name = name
+        self.img = img
+        self.x = x
+        self.y = y
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
         self.cost = cost
-
 
 class Menu:
     def __init__(self, tower, x, y, img, item_cost):
@@ -48,9 +58,7 @@ class Menu:
 
     def add_btn(self, img, name):
         self.items += 1
-        btn_x = self.x - 50  # self.bg.get_width()/2
-        btn_y = self.y - 110
-        self.buttons.append(Button(btn_x, btn_y, img, name))
+        self.buttons.append(Button(self, img, name))
 
     def draw(self, win):
         win.blit(self.bg, (self.x - self.bg.get_width() / 2, self.y - 120))
@@ -69,6 +77,10 @@ class Menu:
                 return btn.name
 
         return None
+
+    def update(self):
+        for btn in self.buttons:
+            btn.update()
 
 
 class VerticalMenu(Menu):

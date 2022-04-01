@@ -59,5 +59,14 @@ class Tower:
         return self.price[self.level - 1]
 
     def move(self, x, y):
+        """
+        Moves the tower to the given coordinates.
+        :param x:
+        :param y:
+        :return:
+        """
         self.x = x
         self.y = y
+        self.menu.x = x
+        self.menu.y = y
+        self.menu.update()
