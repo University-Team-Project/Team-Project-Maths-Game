@@ -13,9 +13,7 @@ class Enemy:
         self.img = None
         self.dis = 0
         self.velocity = 5
-        self.path = [(-10, 224),(19, 224), (177, 235), (282, 283), (526, 277), (607, 217), (641, 105), (717, 57),
-                     (796, 83), (855, 222), (973, 284), (1046, 366), (1022, 430), (894, 492), (740, 500), (580, 550),
-                     (148, 500), (12, 310), (-20, 335), (-75, 385), (-100, 375)]
+        self.path = self.path = [(-10, 224),(19, 224), (177, 235), (282, 283), (526, 277), (607, 217), (641, 105), (717, 57), (796, 83), (855, 222), (973, 284), (1046, 366), (1022, 458), (894, 492), (740, 504), (580, 542), (148, 541), (10, 442), (-20, 335), (-75, 305), (-100, 345)]
         self.x = self.path[0][0]
         self.y = self.path[0][1]
 
@@ -43,8 +41,8 @@ class Enemy:
         length = 50
         move_by = round(length / self.max_health)
         health_bar = move_by * self.health
-        pygame.draw.rect(win, (255,0,0), (self.x-35, self.y - 70, length, 10), 0)
-        pygame.draw.rect(win, (0, 255, 0), (self.x-35, self.y - 70, health_bar, 10), 0)
+        pygame.draw.rect(win, (255, 0, 0), (self.x - 35, self.y - 70, length, 10), 0)
+        pygame.draw.rect(win, (0, 255, 0), (self.x - 35, self.y - 70, health_bar, 10), 0)
 
     def collide(self, X, Y):
 

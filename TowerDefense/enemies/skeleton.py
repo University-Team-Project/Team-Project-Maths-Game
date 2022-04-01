@@ -16,6 +16,8 @@ class Skeleton(Enemy):
 
     def __init__(self):
         super(Skeleton, self).__init__()
-        self.max_health = 3
+        self.name = "Skeleton"
+        self.money = 2  # How much money the enemy drops
+        self.max_health = 3  # Max health
         self.health = self.max_health
         self.imgs = imgs[:]

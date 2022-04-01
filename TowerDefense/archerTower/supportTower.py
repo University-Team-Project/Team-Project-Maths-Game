@@ -10,11 +10,12 @@ range_imgs = [pygame.transform.scale(pygame.image.load(os.path.join("game_assets
 
 class RangeTower(Tower):
     def __init__(self, x, y):
-        super(RangeTower, self).__init__(x, y)
+        super().__init__(x, y)
         self.range = 75
         self.tower_imgs = range_imgs[:]
         self.effect = [0.5, 1]
         self.width = self.height = 90
+        self.name = "RangeTower"
 
     def draw(self, win):
         super().draw_radius(win)
@@ -47,6 +48,7 @@ class DamageTower(RangeTower):
         self.range = 100
         self.tower_imgs = damage_imgs[:]
         self.effect = [0.2, 0.4]
+        self.name = "DamageTower"
 
     def support(self, towers):
 
