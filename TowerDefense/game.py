@@ -33,7 +33,7 @@ class Game:
         self.attack_towers = [ArcherTower(300, 300), ArcherTower(700, 600), ArcherTowerShort(600, 200)]
         self.support_towers = [DamageTower(250, 370)]
         self.lives = 10
-        self.money = 100
+        self.money = 3000
         self.bg = pygame.image.load(os.path.join("game_assets", "game_background_2.png"))
         self.bg = pygame.transform.scale(self.bg, (self.width, self.height))
         self.timer = time.time()
@@ -80,7 +80,10 @@ class Game:
                     else:
                         side_menu_button = self.menu.get_clicked(pos[0], pos[1])
                         if side_menu_button:
-                            self.add_tower(side_menu_button)
+                            cost = self.menu.get_item_cost(side_menu_button)
+                            if self.money >= cost:
+                                self.money -= cost
+                                self.add_tower(side_menu_button)
 
                         btn_clicked = None
                         if self.selected_tower:
