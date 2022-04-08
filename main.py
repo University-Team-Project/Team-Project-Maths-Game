@@ -11,7 +11,7 @@ class Application(tkinter.Tk):
         super().__init__()
         self.title(title)
         self.bind('<Left>', moveImageLeft)
-        self.bind('<Right>', moveImageRight) #twest
+        self.bind('<Right>', moveImageRight) #twest vb
 
 
 def moveImageRight(event):
