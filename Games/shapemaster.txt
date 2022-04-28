@@ -1,0 +1,3 @@
+image: /shapemaster/main_image.png
+game: /shapemaster/shapemaster.exe
+tags: geometry

@@ -15,19 +15,11 @@ class Application(tkinter.Tk):
 
 
 def moveImageRight(event):
-    global car
-    if car.current == 4:
-        pass
-    else:
-        car.moveImageRight()
+    car.moveImageRight()
 
 
 def moveImageLeft(event):
-    global car
-    if car.current == 1:
-        pass
-    else:
-        car.moveImageLeft()
+    car.moveImageLeft()
 
 
 def main():
