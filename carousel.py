@@ -3,6 +3,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 import os
 import glob
+import subprocess, sys
 
 width = 1000  # Window Width
 height = 600  # Window height
@@ -20,7 +21,14 @@ class Carousel(tkinter.Canvas):
         self.showPhoto()
         self.loadIndicator()
         self.current = 0
+        self.game_name_label = tkinter.Label(self.screen, text="", font=("Inter", 24), bg="grey", fg="white")
+        self.game_name_label.place(x=0 + 30, y=height - 75)
         self.loadScreenInfo()
+        photo = Image.open("Play_btn.png")
+        img = ImageTk.PhotoImage(photo)  # make sure to add "/" not "\"
+        button = Button(self.screen, text="placeholder_button",command=self.launch_game)
+        button.place(x=width/2-97, y=height - 97)
+
 
     def getGames(self):
         for game in glob.glob('Games/*.txt'):
@@ -31,10 +39,11 @@ class Carousel(tkinter.Canvas):
             dict = {}
             for i in range(len(data)):
                 line = data[i].rsplit(': ', 1)
-                if line[0] == "image":
+                if line[0] == "image" or "game":
                     line[1] = "Games"+line[1]
                 dict[line[0]] = line[1]
             self.games[name] = dict
+            print(self.games)
 
     def stitchImages(self):
 
@@ -74,7 +83,7 @@ class Carousel(tkinter.Canvas):
             for i in range(25):
                 print(self.after(1, self.move(self.Photo, -40, 0)))
                 print(self.after(1, self.move(self.ind, 10, 0)))
-
+                self.update()
                 self.loadScreenInfo()
             print(self.current)
 
@@ -86,12 +95,18 @@ class Carousel(tkinter.Canvas):
             for i in range(25):
                 self.after(1, self.move(self.Photo, 40, 0))
                 self.after(1, self.move(self.ind, -10, 0))
+                self.update()
                 self.loadScreenInfo()
             print(self.current)
         else:
             print("cant")
 
+    def launch_game(self):
+        main_game_dir = str(list(self.games)[self.current])
+        main_game_dir.replace("/", "\\")
+        game_dir = '\\'+str(self.games[list(self.games)[self.current]]["game"])
+        game_dir.replace("/", "\\")
+        os.startfile(os.getcwd()+game_dir)
 
     def loadScreenInfo(self):
-        self.update()
-        Label(self.screen, text=str(list(self.games)[self.current]), font=("Inter", 24), bg="grey", fg="white").place(x=0+30, y=height-75)
+        self.game_name_label['text'] = str(list(self.games)[self.current])
