@@ -102,11 +102,12 @@ class Carousel(tkinter.Canvas):
             print("cant")
 
     def launch_game(self):
-        main_game_dir = str(list(self.games)[self.current])
-        main_game_dir.replace("/", "\\")
+        main_game_dir = os.getcwd()+"\\Games\\"+str(list(self.games)[self.current])
+        print(main_game_dir)
         game_dir = '\\'+str(self.games[list(self.games)[self.current]]["game"])
         game_dir.replace("/", "\\")
-        os.startfile(os.getcwd()+game_dir)
+        import subprocess
+        process = subprocess.Popen(os.getcwd()+game_dir, cwd=main_game_dir)
 
     def loadScreenInfo(self):
         self.game_name_label['text'] = str(list(self.games)[self.current])
