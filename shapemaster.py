@@ -14,7 +14,7 @@ pygame.display.set_caption("3D Model")
 BG = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "background", "background-black.png")),
                             (WIDTH, HEIGHT)
                             )
-
+#
 #Load Shapes
 SQUARE = pygame.image.load(os.path.join("Assets/shapes", "square.png"))
 PENTAGON = pygame.image.load(os.path.join("Assets/shapes", "pentagon.png"))
