@@ -3,11 +3,11 @@ from tkinter import *
 from PIL import Image, ImageTk
 import os
 import glob
+import time
 import subprocess, sys
 
 width = 1000  # Window Width
 height = 600  # Window height
-
 
 class Carousel(tkinter.Canvas):
     def __init__(self, master):
@@ -24,11 +24,9 @@ class Carousel(tkinter.Canvas):
         self.game_name_label = tkinter.Label(self.screen, text="", font=("Inter", 24), bg="grey", fg="white")
         self.game_name_label.place(x=0 + 30, y=height - 75)
         self.loadScreenInfo()
-        photo = Image.open("Play_btn.png")
-        img = ImageTk.PhotoImage(photo)  # make sure to add "/" not "\"
-        button = Button(self.screen, text="placeholder_button",command=self.launch_game)
-        button.place(x=width/2-97, y=height - 97)
-
+        self.photo = tkinter.PhotoImage(file="Play_btn.png")
+        self.button = Button(self.screen, image=self.photo, command=self.launch_game, background="#ffffff", borderwidth=0, highlightthickness=0)
+        self.button.place(x=width / 2 - 50, y=height - 75)
 
     def getGames(self):
         for game in glob.glob('Games/*.txt'):
@@ -102,12 +100,18 @@ class Carousel(tkinter.Canvas):
             print("cant")
 
     def launch_game(self):
+        self.screen.withdraw()
+        running = True
         main_game_dir = os.getcwd()+"\\Games\\"+str(list(self.games)[self.current])
-        print(main_game_dir)
         game_dir = '\\'+str(self.games[list(self.games)[self.current]]["game"])
         game_dir.replace("/", "\\")
         import subprocess
         process = subprocess.Popen(os.getcwd()+game_dir, cwd=main_game_dir)
+        poll = process.poll()
+        print(poll)
+        if poll is None:
+            self.screen.deiconify()
+
 
     def loadScreenInfo(self):
         self.game_name_label['text'] = str(list(self.games)[self.current])
