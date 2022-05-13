@@ -1,0 +1,16 @@
+﻿Question,Choice1,Choice2,Choice3,Choice4,Answer,ImgPath
+Which angle is acute?,187,326,92,44,44,resources/question/images/question.png
+Which angle is obtuse?,354,177,24,245,177,resources/question/images/question.png
+Which angle is reflex?,248,14,360,165,248,resources/question/images/question.png
+What type is this angle?,Acute,Obtuse,Reflex,Straight,Acute,resources/question/images/acute.png
+What type is this angle?,Reflex,Straight,Acute,Obtuse,Obtuse,resources/question/images/obtuse.png
+What type is this angle?,Acute,Obtuse,Reflex,Right,Reflex,resources/question/images/reflex.png
+What type is this angle?,Reflex,Right,Acute,Obtuse,Right,resources/question/images/right.png
+Alternate angles?,Are Equal,Are Unrelated,Sum 360,Sum 180,Are Equal,resources/question/images/alternate.png
+Corresponding angles?,Are Unrelated,Are Equal,Sum 180,Sum 360,Are Equal,resources/question/images/corresponding.png
+Opposite angles?,Sum 180,Sum 360,Are Equal,Are Unrelated,Are Equal,resources/question/images/opposite.png
+What is angle x?,37,143,63,132,37,resources/question/images/Q1.png
+What is angle x?,41,139,49,187,139,resources/question/images/Q2.png
+What is angle x?,154,42,48,132,48,resources/question/images/Q3.png
+What is angle x?,65,19,109,71,71,resources/question/images/Q4.png
+What is angle x?,65,125,15,145,65,resources/question/images/Q5.png

@@ -1,0 +1,3 @@
+image: /Angle Onslaught/main_image.png
+game: /Angle Onslaught/main.exe
+tags: geometry
