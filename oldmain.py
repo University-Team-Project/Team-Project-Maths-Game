@@ -1,6 +1,6 @@
 import random
 import sys
-import csv
+
 import pygame
 import os.path
 import time
@@ -9,64 +9,57 @@ from opt import blit_rotate_center, scale_image, blit_text_center, blit_text_top
 pygame.init()
 pygame.font.init()
 
-# Set the width and height of the screen [width, height]
-BACKGROUND = pygame.image.load(os.path.join('Assets', 'Car_park.png'))
-BACKGROUND_WIDTH, BACKGROUND_HEIGHT = BACKGROUND.get_width(), BACKGROUND.get_height()
-WIN = pygame.display.set_mode((BACKGROUND_WIDTH, BACKGROUND_HEIGHT))
+
+ROAD = pygame.image.load(os.path.join('Assets', 'Car_park.png'))
+WIDTH, HEIGHT = ROAD.get_width(), ROAD.get_height()
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Maths Driving Game!")
 
 # Creation of all locations
-LOCATIONS = pygame.image.load(os.path.join('Assets', 'LocationMASK_V5.png'))
-LOCATIONS_WIDTH, LOCATIONS_HEIGHT = LOCATIONS.get_width(), LOCATIONS.get_height()
-LOCATION_1 = LOCATIONS
-LOCATION_1_WIDTH, LOCATION_1_HEIGHT = LOCATIONS_WIDTH, LOCATIONS_HEIGHT
-LOCATION2 = LOCATIONS
-LOCATION_2_WIDTH, LOCATION_2_HEIGHT = BACKGROUND_WIDTH - LOCATIONS_WIDTH, LOCATIONS_HEIGHT
-LOCATION3 = LOCATIONS
-LOCATION_3_WIDTH, LOCATION_3_HEIGHT = LOCATIONS_WIDTH, BACKGROUND_HEIGHT - LOCATIONS_HEIGHT
-LOCATION4 = LOCATIONS
-LOCATION_4_WIDTH, LOCATION_4_HEIGHT = BACKGROUND_WIDTH - LOCATIONS_WIDTH, BACKGROUND_HEIGHT - LOCATIONS_HEIGHT
 
+LOCATION_1 = pygame.image.load(os.path.join('Assets', 'LocationMASK_V5.png'))
+LOCATION_1_WIDTH, LOCATION_1_HEIGHT = LOCATION_1.get_width(), LOCATION_1.get_height()
+
+LOCATION2 = LOCATION_1
+LOCATION_2_WIDTH, LOCATION_2_HEIGHT = ROAD.get_width() - LOCATION_1.get_width(), LOCATION_1.get_height()
+
+LOCATION3 = LOCATION_1
+LOCATION_3_WIDTH, LOCATION_3_HEIGHT = LOCATION_1.get_width(), ROAD.get_height() - LOCATION_1.get_height()
+
+LOCATION4 = LOCATION_1
+LOCATION_4_WIDTH, LOCATION_4_HEIGHT = ROAD.get_width() - LOCATION_1.get_width(), ROAD.get_height() - LOCATION_1.get_height()
 
 # Creation of the border - prevents players leaving screen
 BORDER = pygame.image.load(os.path.join('Assets', 'BORDER3.png'))
 BORDER_MASK = pygame.mask.from_surface(BORDER)
 
 # Loading of player car images
+
 PLAYER_ONE_CAR_IMAGE = pygame.image.load(os.path.join('Assets', 'purple-car.png'))
 PLAYER_TWO_CAR_IMAGE = pygame.image.load(os.path.join('Assets', 'white-car.png'))
 
-# Loading of player car masks
 PLAYER_ONE_COLLIDE = pygame.mask.from_surface(PLAYER_ONE_CAR_IMAGE)
 
-# Sets up fonts for the game
 MAIN_FONT = pygame.font.Font("Tokyo 2097.otf", 44)
 QUESTION_FONT = pygame.font.SysFont("arial.ttf", 80)
 ANSWER_FONT = pygame.font.Font("Tokyo 2097.otf", 105)
 SCORE_FONT = pygame.font.Font("Tokyo 2097.otf", 33)
 TIMER_FONT = pygame.font.SysFont("freesansbold.ttf", 33)
 
-# Sets up FPS
 FPS = 60
-# Sets velocity of player cars
 VEL = 5
-# Sets total number of questions
+
 TOTAL_QUESTIONS = 10
 _QUESTION = 0
 
-# Sets up all questions
 QUESTIONS = ["320m/s in 16s", "1450m/s in 29s", "884m/s in 26s", "437m/s in 19s", "738m/s in 18s", "832m/s in 16s", "1170m/s in 18s", "696m/s in 12s"]
 QUESTION_NUM = 1
 CORRECT_ANSWERS = ["20", "50", "34", "23", "41", "52", "65", "58"]
 RANDOM_ANSWERS = ["25", "75", "48", "81", "61", "37", "11", "14", "24", "93", "44", "27", "64", "79", "86", "99"]
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 class GameInfo:
-    # Initialises all game information
-
-    # Sets number of rounds
-    ROUNDS = 1
+    ROUNDS = 5
 
     def __init__(self, game_round=1):
         self.game_round = game_round
@@ -92,11 +85,8 @@ class GameInfo:
     def get_round_time(self):
         pygame.time.set_timer(timer_event, 1000)
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 class CarFunctionality:
-    # Initialises all car functionality
-
     def __init__(self, max_vel, rotation_vel):
         self.img = self.IMG
         self.max_vel = max_vel
@@ -152,23 +142,18 @@ class CarFunctionality:
         poi = mask.overlap(car_mask, offset)
         return poi
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 class PlayerOneCar(CarFunctionality):
-    # Initialises player one car
     IMG = PLAYER_ONE_CAR_IMAGE
-    START_POS = (BACKGROUND.get_width()/2 - 50, BACKGROUND.get_height()/2)
+    START_POS = (ROAD.get_width()/2 - 50, ROAD.get_height()/2)
+
 
 class PlayerTwoCar(CarFunctionality):
-    # Initialises player two car
     IMG = PLAYER_TWO_CAR_IMAGE
-    START_POS = (BACKGROUND.get_width()/2, BACKGROUND.get_height()/2)
+    START_POS = (ROAD.get_width()/2, ROAD.get_height()/2)
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def draw(win, images, player_one_car, player_two_car, current_question, answers_for_draw, current_question_answer, timer):
-    # Draws all images on screen
-
     for img, pos in images:
         win.blit(img, pos)
 
@@ -176,6 +161,7 @@ def draw(win, images, player_one_car, player_two_car, current_question, answers_
     player_two_car.draw(win)
 
     blit_question_top(WIN, QUESTION_FONT, f"{current_question}")
+
 
     if len(answers_for_draw) > 0:
         blit_text_top_left(WIN, ANSWER_FONT, answers_for_draw[0])
@@ -191,11 +177,8 @@ def draw(win, images, player_one_car, player_two_car, current_question, answers_
 
     pygame.display.update()
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def move_player_one(player_one_car):
-    # Handles player 1 car movement
-
     keys = pygame.key.get_pressed()
     moved = False
 
@@ -215,10 +198,8 @@ def move_player_one(player_one_car):
     if not moved:
         player_one_car.reduce_speed()
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def move_player_two(player_two_car):
-    # Handles player 2 car movement
     keys = pygame.key.get_pressed()
     moved = False
 
@@ -234,10 +215,8 @@ def move_player_two(player_two_car):
     if not moved:
         player_two_car.reduce_speed()
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_round_end(player_one_car, player_two_car, game_info):
-    # Handles round end
 
     if player_one_car.x < LOCATION_1_WIDTH and player_one_car.y < LOCATION_1_HEIGHT:
         player_one_car.current_location = 1
@@ -261,10 +240,8 @@ def handle_round_end(player_one_car, player_two_car, game_info):
     else:
         player_two_car.current_location = None
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def next_game_round(player_one_car, player_two_car, game_info, players_scored):
-    # Handles next round
     # PASS IN ARRAY OF PLAYERS WHO HAVE SCORED
     # LOOP THROUGH THE ARRAY AND GIVE POINTS TO EACH PLAYER IN THE ARRAY
     # THEN PRINT OUT EACH PLAYER IN THE ARRAY THAT HAS SCORED
@@ -287,19 +264,15 @@ def next_game_round(player_one_car, player_two_car, game_info, players_scored):
     player_one_car.reset()
     player_two_car.reset()
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_border(player_one_car, player_two_car, game_info):
-    # Handles border collision
     if player_one_car.collide(BORDER_MASK) != None:
         player_one_car.bounce()
     elif player_two_car.collide(BORDER_MASK) != None:
         player_two_car.bounce()
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_questions(game_info, questions_asked):
-    # Handles questions
     asking = True
     while asking:
         current_question = random.choice(QUESTIONS)
@@ -311,10 +284,8 @@ def handle_questions(game_info, questions_asked):
 
     return current_question
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_answer(current_question, location_1_answer, location_2_answer, location_3_answer, location_4_answer):
-    # Handles answer
     answer_location = QUESTIONS.index(current_question)
     answer = CORRECT_ANSWERS[answer_location]
     # Choose random location
@@ -323,19 +294,15 @@ def handle_answer(current_question, location_1_answer, location_2_answer, locati
     locations.remove(correct_answer_location)
     return answer_location, answer, locations
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_all_answers(current_question_answer_location, location_1_answer, location_2_answer, location_3_answer, location_4_answer, locations, incorrect_answers):
-    # Handles all answers
     for i in locations:
         i = random.choice(RANDOM_ANSWERS)
         incorrect_answers.append(i)
     return locations, incorrect_answers
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_reset():
-    # Handles reset
     current_question = ""
     current_question_answer = ""
     location_1_answer = ""
@@ -347,14 +314,12 @@ def handle_reset():
     answers_for_draw = []
     correct_answer_location = None
     players_scored = []
-    timer = 1
+    timer = 30
 
     return current_question, current_question_answer, location_1_answer, location_2_answer, location_3_answer, location_4_answer, locations, incorrect_answers, answers_for_draw, correct_answer_location, players_scored, timer
 
-# ----------------------------------------------------------------------------------------------------------------------
 
 def handle_game_over(player_one_car, player_two_car, game_info):
-    # Handles game over
     if player_one_car.current_points > player_two_car.current_points:
         blit_text_center(WIN, MAIN_FONT, "Player 1 has won the game!")
     elif player_two_car.current_points > player_one_car.current_points:
@@ -366,141 +331,11 @@ def handle_game_over(player_one_car, player_two_car, game_info):
     blit_player2_scoreboard(WIN, MAIN_FONT, "Player 2:  " + str(player_two_car.current_points))
     pygame.display.update()
 
-    pygame.time.wait(3000)
-    get_input_from_user(player_one_car, player_two_car)
-
-    pygame.time.wait(1000)
-    pygame.display.quit()
-    pygame.quit()
-    sys.exit()
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-def write_to_csv(data):
-    # Writes data to csv file
-    with open('Scoreboard.csv', 'a', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(data[0])
-        writer.writerow(data[1])
-
-
-def get_input_from_user(player_one_car, player_two_car):
-    # Gets input from user
-
-    # it will display on screen
-    # screen = pygame.display.set_mode([600, 500])
-    screen = pygame.display.set_mode((BACKGROUND_WIDTH, BACKGROUND_HEIGHT))
-    color_passive = pygame.Color('black')
-    color_active = pygame.Color('white')
-
-
-    # basic font for user typed
-    base_font = pygame.font.Font(None, 32)
-
-    class PlayerNameInputBox:
-
-        def __init__(self, name, x, y, w, h, text=''):
-            self.name = name
-            self.rect = pygame.Rect(x, y, w, h)
-            self.color = color_passive
-            self.text = text
-            self.txt_surface = base_font.render(text, True, self.color)
-            self.active = False
-
-        def handle_event(self, event):
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # If the user clicked on the input_box rect
-                if self.rect.collidepoint(event.pos):
-                    # Toggle the active variable.
-                    self.active = not self.active
-                else:
-                    self.active = False
-                # Change the current color of the input box.
-                self.color = color_active if self.active else color_passive
-            if event.type == pygame.KEYDOWN:
-                if self.active:
-                    if event.key == pygame.K_RETURN:
-                        self.color = '#643cb4'
-                        return self.text
-                    elif event.key == pygame.K_BACKSPACE:
-                        self.text = self.text[:-1]
-                    else:
-                        self.text += event.unicode
-                    # Re-render the text.
-                    self.txt_surface = base_font.render(self.text, True, self.color)
-
-        def update(self):
-            # Resize the box if the text is too long.
-            width = max(200, self.txt_surface.get_width()+10)
-            self.rect.w = width
-
-        def draw(self, screen):
-            # Blit the text.
-            screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-            # Blit the rect.
-            pygame.draw.rect(screen, self.color, self.rect, 2)
-
-    # Create an input_boxes
-    player_1_input_box = PlayerNameInputBox("Player1", (1280 / 2) - 100, 200, 140, 32)
-    player_2_input_box = PlayerNameInputBox("Player2", (1280 / 2) - 100, 300, 140, 32)
-    input_boxes = [player_1_input_box, player_2_input_box]
-    done = False
-
-    while not done:
-        mouse_pos = pygame.mouse.get_pos()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-            for box in input_boxes:
-                box.handle_event(event)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-
-                # if the mouse is clicked on the
-                # button the game is terminated
-                if (BACKGROUND_WIDTH / 2) - 70 <= mouse_pos[0] <= (BACKGROUND_WIDTH / 2) + 70 and (BACKGROUND_HEIGHT / 2) <= \
-                        mouse_pos[1] <= (BACKGROUND_HEIGHT / 2) + 40:
-                    data = [[player_1_input_box.text, player_one_car.current_points], [player_2_input_box.text, player_two_car.current_points]]
-                    write_to_csv(data)
-                    done = True
-
-        for box in input_boxes:
-            box.update()
-
-        screen.fill((30, 30, 30))
-        screen.blit(BACKGROUND, (0, 0))
-        for box in input_boxes:
-            box.draw(screen)
-
-        blit_question_text_top(WIN, TIMER_FONT, "Enter names for Scoreboard!")
-        player1_text = TIMER_FONT.render('Player 1:', True, 'black')
-        screen.blit(player1_text, ((BACKGROUND_WIDTH / 2) - 100, (BACKGROUND_HEIGHT / 2) - 185))
-        player2_text = TIMER_FONT.render('Player 2:', True, 'black')
-        screen.blit(player2_text, ((BACKGROUND_WIDTH / 2) - 100, (BACKGROUND_HEIGHT / 2) - 85))
-
-
-        if (BACKGROUND_WIDTH / 2) - 70 <= mouse_pos[0] <= (BACKGROUND_WIDTH / 2) + 70 and (BACKGROUND_HEIGHT / 2) <= \
-                        mouse_pos[1] <= (BACKGROUND_HEIGHT / 2) + 40:
-            pygame.draw.rect(screen, 'black', [(BACKGROUND_WIDTH / 2) - 72, (BACKGROUND_HEIGHT / 2) - 2, 145, 45])
-            pygame.draw.rect(screen, '#643cb4', [(BACKGROUND_WIDTH / 2) - 70, BACKGROUND_HEIGHT / 2, 140, 40])
-            text = TIMER_FONT.render('Submit', True, 'white')
-            screen.blit(text, ((BACKGROUND_WIDTH / 2) - 40, (BACKGROUND_HEIGHT / 2) + 10))
-            pygame.display.update()
-        else:
-            pygame.draw.rect(screen, 'black', [(BACKGROUND_WIDTH / 2) - 72, (BACKGROUND_HEIGHT / 2) - 2, 145, 45])
-            pygame.draw.rect(screen, '#5b5c5c', [(BACKGROUND_WIDTH / 2) - 70, BACKGROUND_HEIGHT / 2, 140, 40])
-            text = TIMER_FONT.render('Submit', True, 'black')
-            screen.blit(text, ((BACKGROUND_WIDTH / 2) - 40, (BACKGROUND_HEIGHT / 2) + 10))
-            pygame.display.update()
-
-        pygame.display.flip()
-
-# ----------------------------------------------------------------------------------------------------------------------
 
 
 run = True
 clock = pygame.time.Clock()
-images = [(BORDER, (0, 0)), (LOCATION_1, (0, 0)), (LOCATION2, (BACKGROUND.get_width() - LOCATION_1_WIDTH, 0)), (LOCATION3, (0, BACKGROUND.get_height() - LOCATION_1_HEIGHT)), (LOCATION4, (BACKGROUND.get_width() - LOCATION_1_WIDTH, BACKGROUND.get_height() - LOCATION_1_HEIGHT)), (BACKGROUND, (0, 0))]
+images = [(BORDER, (0, 0)), (LOCATION_1, (0, 0)), (LOCATION2, (ROAD.get_width() - LOCATION_1_WIDTH, 0)), (LOCATION3, (0, ROAD.get_height() - LOCATION_1_HEIGHT)), (LOCATION4, (ROAD.get_width() - LOCATION_1_WIDTH, ROAD.get_height() - LOCATION_1_HEIGHT)), (ROAD, (0, 0))]
 player_one_car = PlayerOneCar(4, 4)
 player_two_car = PlayerTwoCar(4, 4)
 game_info = GameInfo()
@@ -512,29 +347,27 @@ timer_event = pygame.USEREVENT + 1
 current_question, current_question_answer, location_1_answer, location_2_answer, location_3_answer, location_4_answer, locations, incorrect_answers, answers_for_draw, correct_answer_location, players_scored, timer = handle_reset()
 
 while run:
-    # Main game loop
     clock.tick(FPS)
 
     draw(WIN, images, player_one_car, player_two_car, current_question, answers_for_draw, current_question_answer, timer)
 
     while not game_info.started:
-        # Game not started
         if game_info.game_finish():
-            # Game finished
             handle_game_over(player_one_car, player_two_car, game_info)
+            pygame.time.wait(4500)
+            pygame.display.quit()
+            pygame.quit()
+            sys.exit()
         else:
-            # Game not finished
             blit_text_center(WIN, MAIN_FONT, f"Press enter to start round {game_info.game_round}!")
             pygame.display.update()
             for event in pygame.event.get():
-                # Event handling
                 if event.type == pygame.QUIT:
                     pygame.display.quit()
                     pygame.quit()
                     sys.exit()
                     break
                 if event.type == pygame.KEYDOWN:
-                    # Key down event handling
                     current_question = handle_questions(game_info, questions_asked)
                     current_question_answer_location, current_question_answer, locations = handle_answer(
                         current_question, location_1_answer, location_2_answer,
@@ -553,17 +386,14 @@ while run:
 
 
     for event in pygame.event.get():
-        # Event handling
         if event.type == timer_event:
             if game_info.started == True:
-                # Timer event handling
                 if timer >= 0:
                     timer -= 1
                 else:
                     pygame.time.set_timer(timer_event, 0)
                     game_active = False
         if event.type == pygame.QUIT:
-            # Quit event handling
             run = False
             break
 
@@ -593,6 +423,5 @@ while run:
                 player_two_checked = True
 
         if player_one_checked == True and player_two_checked == True:
-            # Both players scores checked
             next_game_round(player_one_car, player_two_car, game_info, players_scored)
             current_question, current_question_answer, location_1_answer, location_2_answer, location_3_answer, location_4_answer, locations, incorrect_answers, answers_for_draw, correct_answer_location, players_scored, timer = handle_reset()
