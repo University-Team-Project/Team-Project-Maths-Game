@@ -32,7 +32,6 @@ class Button:
         self.y = self.menu.y - 110
 
 
-
 class VerticalButton(Button):
     def __init__(self, x, y, img, name, cost):
         self.name = name
@@ -42,6 +41,7 @@ class VerticalButton(Button):
         self.width = self.img.get_width()
         self.height = self.img.get_height()
         self.cost = cost
+
 
 class Menu:
     def __init__(self, tower, x, y, img, item_cost):
@@ -57,11 +57,17 @@ class Menu:
         self.tower = tower
 
     def add_btn(self, img, name):
+        """
+        Adds a button to the menu
+        :param img:
+        :param name:
+        :return:
+        """
         self.items += 1
-        self.buttons.append(Button(self, img, name))
+        self.buttons.append(Button(self, img, name))  # add button to list
 
     def draw(self, win):
-        win.blit(self.bg, (self.x - self.bg.get_width() / 2, self.y - 120))
+        win.blit(self.bg, (self.x - 50, self.y - 120))
         for item in self.buttons:
             item.draw(win)
             win.blit(star, (item.x + item.width + 5, item.y - 9))
@@ -96,6 +102,13 @@ class VerticalMenu(Menu):
         self.font = pygame.font.SysFont("freesansbold.ttf", 25)
 
     def add_btn(self, img, name, cost):
+        """
+        add a button to the list
+        :param img:
+        :param name:
+        :param cost:
+        :return:
+        """
         self.items += 1
         btn_x = self.x - 40
         btn_y = self.y - 100 + (self.items - 1) * 100
@@ -113,10 +126,14 @@ class VerticalMenu(Menu):
         return -1
 
     def draw(self, win):
+        """
+        draw the menu
+        :param win:
+        :return:
+        """
         win.blit(self.bg, (self.x - self.bg.get_width() / 2, self.y - 120))
         for item in self.buttons:
             item.draw(win)
             win.blit(star2, (item.x, item.y + item.height))
             text = self.font.render(str(item.cost), 1, (255, 255, 255))
-            win.blit(text, (item.x + item.width/2 - text.get_width()/2 + 7, item.y + item.height + 5))
-
+            win.blit(text, (item.x + item.width / 2 - text.get_width() / 2 + 7, item.y + item.height + 5))

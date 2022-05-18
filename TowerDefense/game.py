@@ -24,6 +24,25 @@ buy_range = pygame.transform.scale(pygame.image.load(os.path.join("game_assets",
 attack_tower_names = ["archer", "crossbow"]
 support_tower_names = ["RangeTower", "DamageTower"]
 
+
+wave_enemies = [Knight(), Skeleton(), OrcEnemy()]
+waves = [
+    [20, 0, 0],
+    [50, 0, 0],
+    [100, 0, 0],
+    [0, 20, 0],
+    [0, 50, 0],
+    [0, 100, 0],
+    [20, 100, 0],
+    [50, 100, 0],
+    [100, 100, 0],
+    [0, 0, 50],
+    [20, 0, 100],
+    [20, 0, 150],
+    [200, 100, 200],
+]
+
+
 class Game:
     def __init__(self):
         self.width = 1350
@@ -45,19 +64,38 @@ class Game:
         self.menu.add_btn(buy_damage, "buy_damage", 1000)
         self.menu.add_btn(buy_range, "buy_range", 1000)
         self.moving_object = None
+        self.wave = 0
+        self.current_wave = waves[self.wave][:]
+        self.pause = False
+
+    def generate_enemies(self):
+        """
+        generate the next enemy or enemies to show
+        :return:
+        """
+        if sum(self.current_wave) == 0:
+            self.wave += 1
+            self.current_wave = waves[self.wave]
+            self.pause = True
+
+        else:
+            for x in range(len(self.current_wave)):
+                if self.current_wave[x] != 0:
+                    self.enemys.append(wave_enemies[x])
+                    self.current_wave[x] = self.current_wave[x] - 1
+                    break
 
     def run(self):
-        if time.time() - self.timer > 2:
-            self.timer - time.time()
 
         run = True
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            if time.time() - self.timer >= random.randrange(1, 5) / 2:
-                self.timer = time.time()
-                self.enemys.append(random.choice([Knight(), OrcEnemy(), Skeleton()]))
+            if self.pause:
+                if time.time() - self.timer >= random.randrange(1, 5) / 2:
+                    self.timer = time.time()
+                    self.generate_enemies()
 
             pos = pygame.mouse.get_pos()
 

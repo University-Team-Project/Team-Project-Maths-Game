@@ -57,7 +57,7 @@ class ArcherTower(Tower):
             self.archer_count = 0
 
         archer = self.archer_imgs[self.archer_count // 10]
-        if self.left == True:
+        if self.left:
             add = -25
         else:
             add = -archer.get_width() + 10

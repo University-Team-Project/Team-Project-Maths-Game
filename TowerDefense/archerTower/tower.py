@@ -5,6 +5,7 @@ from menu.menu import Menu
 menu_bg = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "table_2.png")), (123, 70))
 upgrade_btn = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "upgrade.png")), (50, 50))
 
+
 class Tower:
 
     def __init__(self, x, y):
