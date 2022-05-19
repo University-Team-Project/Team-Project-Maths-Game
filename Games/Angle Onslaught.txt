@@ -1,0 +1,4 @@
+image: /Angle Onslaught/main_image.png
+game: /Angle Onslaught/main.exe
+tags: geometry
+scores: /Angle Onslaught/Scores.csv

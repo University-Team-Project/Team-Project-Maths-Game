@@ -1,0 +1,4 @@
+image: /PA/main_image.png
+game: /PA/main.exe
+tags: geometry
+scores: /PA/Scores.csv

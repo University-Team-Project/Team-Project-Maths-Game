@@ -1,0 +1,4 @@
+image: /accelerator/main_image.png
+game: /accelerator/main.exe
+tags: geometry
+scores: /accelerator/Scores.csv

@@ -1,0 +1,4 @@
+image: /Resource Ranger/main_image.png
+game: /Resource Ranger/game.exe
+tags: geometry
+scores: /Resource Ranger/Scores.csv
