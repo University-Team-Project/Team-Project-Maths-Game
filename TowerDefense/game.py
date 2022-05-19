@@ -6,7 +6,7 @@ from enemies.skeleton import Skeleton
 from enemies.knight import Knight
 from archerTower.archerTower import ArcherTower, ArcherTowerShort
 from archerTower.supportTower import RangeTower, DamageTower
-from menu.menu import VerticalMenu
+from menu.menu import VerticalMenu, PlayPauseButton
 import random
 
 # Constants
@@ -21,11 +21,14 @@ buy_crossbow = pygame.transform.scale(pygame.image.load(os.path.join("game_asset
 buy_damage = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "buy_damage.png")), (75, 75))
 buy_range = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "buy_range.png")), (75, 75))
 
+play_btn = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "button_play.png")), (75, 75))
+pause_btn = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "button_pause.png")), (75, 75))
+
+waves_bg = pygame.transform.scale(pygame.image.load(os.path.join("game_assets", "window_2.png")), (175, 75))
+
 attack_tower_names = ["archer", "crossbow"]
 support_tower_names = ["RangeTower", "DamageTower"]
 
-
-wave_enemies = [Knight(), Skeleton(), OrcEnemy()]
 waves = [
     [20, 0, 0],
     [50, 0, 0],
@@ -49,8 +52,8 @@ class Game:
         self.height = 700
         self.win = pygame.display.set_mode((self.width, self.height))
         self.enemys = []
-        self.attack_towers = [ArcherTower(300, 300), ArcherTower(700, 600), ArcherTowerShort(600, 200)]
-        self.support_towers = [DamageTower(250, 370)]
+        self.attack_towers = []
+        self.support_towers = []
         self.lives = 10
         self.money = 3000
         self.bg = pygame.image.load(os.path.join("game_assets", "game_background_2.png"))
@@ -66,7 +69,8 @@ class Game:
         self.moving_object = None
         self.wave = 0
         self.current_wave = waves[self.wave][:]
-        self.pause = False
+        self.pause = True
+        self.playPauseButton = PlayPauseButton(play_btn, pause_btn, 10, self.height - 85)
 
     def generate_enemies(self):
         """
@@ -74,15 +78,18 @@ class Game:
         :return:
         """
         if sum(self.current_wave) == 0:
-            self.wave += 1
-            self.current_wave = waves[self.wave]
-            self.pause = True
+            if len(self.enemys) == 0:
+                self.wave += 1
+                self.current_wave = waves[self.wave]
+                self.pause = True
+                self.playPauseButton.paused = self.pause
 
         else:
+            wave_enemies = [Knight(), Skeleton(), OrcEnemy()]
             for x in range(len(self.current_wave)):
                 if self.current_wave[x] != 0:
                     self.enemys.append(wave_enemies[x])
-                    self.current_wave[x] = self.current_wave[x] - 1
+                    self.current_wave[x] = self.current_wave[x] - 2
                     break
 
     def run(self):
@@ -92,7 +99,8 @@ class Game:
 
         while run:
             clock.tick(60)
-            if self.pause:
+
+            if self.pause == False:
                 if time.time() - self.timer >= random.randrange(1, 5) / 2:
                     self.timer = time.time()
                     self.generate_enemies()
@@ -116,6 +124,14 @@ class Game:
                         self.moving_object.moving = False
                         self.moving_object = None
                     else:
+                        # check for play or pause
+                        if self.playPauseButton.click(pos[0], pos[1]):
+                            self.pause = not(self.pause)
+                            print(self.pause)
+                            self.playPauseButton.paused = self.pause
+
+
+
                         side_menu_button = self.menu.get_clicked(pos[0], pos[1])
                         if side_menu_button:
                             cost = self.menu.get_item_cost(side_menu_button)
@@ -147,25 +163,26 @@ class Game:
                                     self.selected_tower = tw
                                 else:
                                     tw.selected = False
+            if not self.pause:
+                to_del = []
+                for en in self.enemys:
+                    en.move()
+                    if en.x < -15:
+                        to_del.append(en)
 
-            to_del = []
-            for en in self.enemys:
-                if en.x < -15:
-                    to_del.append(en)
+                for d in to_del:
+                    self.lives -= 1
+                    self.enemys.remove(d)
 
-            for d in to_del:
-                self.lives -= 1
-                self.enemys.remove(d)
+                for tw in self.attack_towers:
+                    self.money += tw.attack(self.enemys)
 
-            for tw in self.attack_towers:
-                self.money += tw.attack(self.enemys)
+                for tw in self.support_towers:
+                    tw.support(self.attack_towers)
 
-            for tw in self.support_towers:
-                tw.support(self.attack_towers)
-
-            if self.lives <= 0:
-                print("You Lose")
-                run = False
+                if self.lives <= 0:
+                    print("You Lose")
+                    run = False
 
             self.draw()
 
@@ -192,6 +209,9 @@ class Game:
 
         self.menu.draw(self.win)
 
+        # Draw play pause button
+        self.playPauseButton.draw(self.win)
+
         # Draw lives
         text = self.life_font.render(str(self.lives), True, (255, 255, 255))
         life = pygame.transform.scale(lives_img, (50, 50))
@@ -199,6 +219,10 @@ class Game:
 
         self.win.blit(text, (start_x - text.get_width() - 10, 17))
         self.win.blit(life, (start_x, 10))
+
+        self.win.blit(waves_bg, (10, 10))
+        text = self.life_font.render("Wave: " + str(self.wave), True, (255, 255, 255))
+        self.win.blit(text, (15 + waves_bg.get_width()/2 - text.get_width()/2, 30))
 
         # Draw money
         text = self.life_font.render(str(self.money), True, (255, 255, 255))

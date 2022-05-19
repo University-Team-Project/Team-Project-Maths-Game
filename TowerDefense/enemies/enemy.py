@@ -2,6 +2,7 @@ import pygame
 import math
 
 
+
 class Enemy:
     imgs = []
 
@@ -13,7 +14,9 @@ class Enemy:
         self.img = None
         self.dis = 0
         self.velocity = 5
-        self.path = self.path = [(-10, 224),(19, 224), (177, 235), (282, 283), (526, 277), (607, 217), (641, 105), (717, 57), (796, 83), (855, 222), (973, 284), (1046, 366), (1022, 458), (894, 492), (740, 504), (580, 542), (148, 541), (10, 442), (-20, 335), (-75, 305), (-100, 345)]
+        self.path = [(-10, 224), (19, 224), (177, 235), (282, 283), (526, 277), (607, 217), (641, 105), (717, 57),
+                     (796, 83), (855, 222), (973, 284), (1046, 366), (1022, 458), (894, 492), (740, 504), (580, 542),
+                     (148, 541), (10, 442), (-20, 335), (-75, 305), (-100, 345)]
         self.x = self.path[0][0]
         self.y = self.path[0][1]
 
@@ -29,13 +32,9 @@ class Enemy:
         """
 
         self.img = self.imgs[self.animation_count // 3]
-        self.animation_count += 1
-        if self.animation_count >= len(self.imgs) * 3:
-            self.animation_count = 0
 
         win.blit(self.img, (self.x - self.img.get_width() / 2, self.y - self.img.get_height() / 2 - 30))
         self.health_bar(win)
-        self.move()
 
     def health_bar(self, win):
         length = 50
@@ -53,11 +52,18 @@ class Enemy:
 
     def move(self):
 
+        self.animation_count += 1
+        if self.animation_count >= len(self.imgs) * 3:
+            self.animation_count = 0
+
         x1, y1 = self.path[self.path_pos]
+        x1 = x1 + 75
         if self.path_pos + 1 >= len(self.path):
             x2, y2 = (-10, 355)
         else:
             x2, y2 = self.path[self.path_pos + 1]
+
+        x2 = x2 + 75
 
         dirn = ((x2 - x1) * 2, (y2 - y1) * 2)
         length = math.sqrt((dirn[0]) ** 2 + (dirn[1]) ** 2)
