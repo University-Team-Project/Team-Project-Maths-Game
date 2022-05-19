@@ -1,4 +1,4 @@
-image: /PA/main_image.png
-game: /PA/main.exe
+image: /Mental Matchup/main_image.png
+game: /Mental Matchup/main.exe
 tags: geometry
-scores: /PA/Scores.csv
+scores: /Mental Matchup/Scores.csv

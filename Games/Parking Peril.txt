@@ -1,4 +1,4 @@
-image: /accelerator/main_image.png
-game: /accelerator/main.exe
+image: /Parking Peril/main_image.png
+game: /Parking Peril/main.exe
 tags: geometry
-scores: /accelerator/Scores.csv
+scores: /Parking Peril/Scores.csv

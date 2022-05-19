@@ -1,4 +1,4 @@
-image: /shapemaster/main_image.png
-game: /shapemaster/shapemaster.exe
+image: /Shapemaster/main_image.png
+game: /Shapemaster/shapemaster.exe
 tags: geometry
-scores: /shapemaster/Scores.csv
+scores: /Shapemaster/Scores.csv
